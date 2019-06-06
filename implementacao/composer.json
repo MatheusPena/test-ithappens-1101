@@ -2,8 +2,9 @@
     "require": {
         "slim/slim": "^3.12",
         "slim/twig-view": "^2.5",
-        "php-di/slim-bridge": "^2.0",
-        "illuminate/database": "^5.8"
+        "illuminate/database": "^5.8",
+        "php-di/invoker": "1.2.0",
+        "php-di/slim-bridge": "1.0.2"
     },
     "autoload": {
       "psr-4": {
