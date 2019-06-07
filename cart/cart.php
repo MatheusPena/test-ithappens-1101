@@ -43,7 +43,23 @@ if (filter_input(INPUT_POST, 'add_to_cart')) {
         );
     }
 }
-pre_r($_SESSION);
+
+//método para deletar um item do carrinho
+if (filter_input(INPUT_GET, 'action') == 'delete'){
+
+  //faz um loop por todo os produtos do carrinho até encontrar um que corresponda a variável GET ID
+  foreach($_SESSION['shopping_cart'] as $key => $sproduct){
+    if ($product['id'] == filter_input(INPUT_GET, 'id')){
+      //remove o produto do carrinho quando corresponde a variável GET ID
+      unset($_SESSION['shopping_cart'][$key]);
+    }
+  }
+  //reseta as chaves do array da sessão para que elas correspondam com array númerico do $product_ids
+  $_SESSION['shopping_cart'] = array_values($_SESSION['shopping_cart']);
+}
+
+
+//pre_r($_SESSION);
 
 function pre_r($array) {
   echo '<pre>';
@@ -97,11 +113,68 @@ function pre_r($array) {
       endif;
   endif;
   ?>
+  <div style="clear:both"> </div>
+  <br/>
+  <!-- Tabela que exibe o nome, quantidade, preço, total e ação do item dentro do carrinho -->
+  <div class="table-responsive">
+  <table class="table">
+    <tr><th colspan="5"><h3>Detalhes do Pedido</h3></th></tr>
+  <tr>
+      <th width="40%">Nome do Produto</th>
+      <th width="10%">Quantidade</th>
+      <th width="20%">Preço</th>
+      <th width="15%">Total</th>
+      <th width="5%">Ação</th>
+  </tr>
+  <?php
+  //certifica que o array da sessão não está vazio
+  if(!empty($_SESSION['shopping_cart'])):
 
+  //variável que servirá para somar o valor total
+  $total = 0;
+
+  //faz um loop no array da sessão
+  foreach($_SESSION['shopping_cart'] as $key => $product):
+  ?>
+  <tr>
+    <!-- Imprime os valores do carrinho na tabela -->
+    <td><?php echo $product['name'];  ?></td>
+    <td><?php echo $product['quantity'];  ?></td>
+    <td><?php echo $product['price'];  ?></td>
+    <td><?php echo number_format($product['quantity'] * $product['price'], 2); ?></td>
+    <td>
+        <a href="cart.php?action=delete&id=<?php echo $product['id']; ?>">
+            <div class="btn-danger">Remover</div>
+        </a>
+    </td>
+  <tr>
+  <?php
+      //conta do total
+      $total = $total + ($product['quantity'] * $product['price']);
+    endforeach;
+  ?>
+  <tr>
+      <td colspan="3" align="right">Total</td>
+      <td align="right">$<?php echo number_format($total, 2); ?></td>
+      <td></td>
+  </tr>
+  <tr>
+      <!-- Mostra o botão de comprar só se o carrinho não estiver vazio -->
+      <td colspan="5">
+      <?php
+          if (isset($_SESSION['shopping_cart'])):
+          if (count($_SESSION['shopping_cart']) > 0):
+      ?>
+        <a href="#" class="button">Comprar</a>
+      <?php endif; endif; ?>
+    </td>
+  </tr>
+      <?php
+      endif;
+      ?>
+    </table>
   </div>
-
-
-
+</div>
 
 
 </body>
